@@ -83,29 +83,27 @@ def chooseRandomParents(parents):
     return[parents[a],parents[b]]
 
 def generateTwoChilds(bestPopulation):
-    children = []
-    if bestPopulation is none:
-        pop[0] = generateDNA()
-        pop[1] = generateDNA()
+    
+    if bestPopulation is None:
+        return [generateDNA(),generateDNA()]
     else:
         parents = chooseRandomParents(bestPopulation)
         children = crossOver(parents[0],parents[1])
         return mutate(children) 
-     
         
 def generatePopulation(size, bestPopulation):
-    newsize = size
+    newSize = size
     if size % 2 != 0 :
         newSize +=1
-    newSize/2
+    newSize = int(newSize/2)
     count = 0
     population = []
-    for i in range(newSize-1):
+    for i in range(newSize):
         children = generateTwoChilds(bestPopulation)
-        population[i] = children[0]
+        population.append(children[0])
         count+=1
         if count < size:
-            population[i+1] = children[1]
+            population.append(children[1])
             count+=1
     for creatureDNA in population:
         generateCreature(creatureDNA, randomVector3(60,60,60), randomVector3(90,90,90))
@@ -232,6 +230,23 @@ def randomVector3(xRange,yRange,zRange):
     return (random.random()*xRange*2-xRange,random.random()*yRange*2-yRange,random.random()*zRange*2-zRange)
 
 clearScene()
-generatePopulation(3,None)
+generatePopulation(5,None)
 
-bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result.obj", use_materials=False)
+#i = 0
+#scene = bpy.context.scene
+#for ob in scene.objects:
+    # make the current object active and select it
+#    bpy.context.view_layer.objects.active = ob
+#    ob.select_set(True)
+
+    # make sure that we only export meshes
+#    if ob.type == 'MESH':
+        # export the currently selected object to its own file based on its name
+#        bpy.ops.export_scene.obj(
+#                filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj",
+#                use_selection=True,
+#                use_materials=False
+ #               )
+    # deselect the object and move on to another if any more are left
+#    ob.select_set(True)
+#    i += 1
