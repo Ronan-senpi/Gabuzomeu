@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Diagnostics;
 using System;
+using System.IO;
 using System.Threading;
+using UnityEditor;
 using Debug = UnityEngine.Debug;
 
 // ReSharper disable once InconsistentNaming
@@ -9,20 +11,13 @@ public class IB : MonoBehaviour {
     public string blenderPath;
     public string pyFilePath;
 
-    private void Awake() {
-        var thread = new Thread(Run);
-        thread.Start();
-    }
-    
-    private void Run() {
+    public void Run() {
         try {
-            // to add  --background
             var processInfo = new ProcessStartInfo();
-            //"cmd.exe", 
             processInfo.FileName = "cmd.exe";
-            processInfo.Arguments = "/C \"" + blenderPath + " --python " + pyFilePath + "\"";
-            processInfo.WindowStyle = ProcessWindowStyle.Maximized;
-            //processInfo.CreateNoWindow = true;
+            processInfo.Arguments = "/C \"" + blenderPath + " --background --python " + pyFilePath + "\"";
+            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            processInfo.CreateNoWindow = true;
             processInfo.UseShellExecute = false;
             processInfo.RedirectStandardOutput = true;
             processInfo.RedirectStandardError = true;
@@ -37,7 +32,17 @@ public class IB : MonoBehaviour {
             
             Debug.Log(outBuffer.ReadToEnd());
             var errorLog = errorBuffer.ReadToEnd();
-            if(errorLog == "") Debug.LogError(errorLog);
+            if(errorLog != "") Debug.LogError(errorLog);
+            AssetDatabase.Refresh();
+            var files = Directory.GetFiles("Assets/Blender");
+            Vector3 position = Vector3.zero;
+            foreach (var file in files) {
+                if (Path.GetExtension(file) == ".obj") {
+                    var obj = AssetDatabase.LoadAssetAtPath<GameObject>(file);
+                    Instantiate(obj, position, Quaternion.identity);
+                    position.x += 2f;
+                }
+            }
         }
         catch (Exception e) {
             Debug.LogError(e);

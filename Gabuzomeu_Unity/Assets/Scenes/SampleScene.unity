@@ -150,9 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff10f2d7b15b7c949a4d6c4eea9789d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blenderCall: {fileID: 102900000, guid: 5f7109cbafe03aa468ecc87c0e5cd4fa, type: 3}
-  blenderPath: '"C:\Program Files\Blender Foundation\Blender 2.92\blender.exe"'
-  pyFilePath: '"C:\Users\pamar\Documents\Projets\Gabuzomeu\Gabuzomeu_Blender\Millepate.py"'
+  blenderPath: '"C:/Program Files/Blender Foundation/Blender 2.92/blender.exe"'
+  pyFilePath: '"C:/Users/pamar/Documents/Projets/Gabuzomeu/scriptBlender_exportpourUnity.py"'
 --- !u!4 &303686278
 Transform:
   m_ObjectHideFlags: 0
