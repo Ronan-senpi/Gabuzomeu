@@ -60,6 +60,7 @@ def fitness(currentDNA) :
             
     #Retourne le score final
     return fitnessScore;
+
 def generateDNA():
     nbArms = random.randint(0, 15)
     posArms = random.randint(0, 255)
@@ -89,11 +90,28 @@ def generateTwoChilds(bestPopulation):
     else:
         parents = chooseRandomParents(bestPopulation)
         children = crossOver(parents[0],parents[1])
-        mutate(children)
+        return mutate(children) 
+     
         
 def generatePopulation(size, bestPopulation):
-    print(todo)
-        
+    newsize = size
+    if size % 2 != 0 :
+        newSize +=1
+    newSize/2
+    count = 0
+    population = []
+    for i in range(newSize-1):
+        children = generateTwoChilds(bestPopulation)
+        population[i] = children[0]
+        count+=1
+        if count < size:
+            population[i+1] = children[1]
+            count+=1
+    for creatureDNA in population:
+        generateCreature(creatureDNA, randomVector3(60,60,60), randomVector3(90,90,90))
+    return population
+
+
 def generateCreature(DNA, creaturePosition, creatureRotation):
     
     #int(input[], 2)
@@ -214,10 +232,6 @@ def randomVector3(xRange,yRange,zRange):
     return (random.random()*xRange*2-xRange,random.random()*yRange*2-yRange,random.random()*zRange*2-zRange)
 
 clearScene()
-generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
-generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
-generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
-generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
-generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
+generatePopulation(3,None)
 
 bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result.obj", use_materials=False)
