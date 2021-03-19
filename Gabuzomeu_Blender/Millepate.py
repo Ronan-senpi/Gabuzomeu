@@ -1,6 +1,7 @@
 import bpy
 import mathutils
 from math import sqrt
+from mathutils import Euler
 import random
 
 def clearScene():
@@ -16,7 +17,49 @@ def clearScene():
 
 def translate(vec):
     bpy.ops.transform.translate(value=vec)
+    
+def rotate(rotation):
+    bpy.context.active_object.rotation_euler = Euler(rotation, 'XYZ')
+        
+perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
 
+
+def crossOver(DNA1, DNA2) : 
+    #transofme le tableau d'adn en un string
+    concatDNA1 = ''.join(DNA1)
+    concatDNA2 = ''.join(DNA2)
+    lenMin = 1;
+    lenMax = min(len(concatDNA1), len(concatDNA2))
+    if lenMax > 1 :
+        lenMax -= 1
+    split = random.randint(lenMin, lenMax)
+    newDNA = concatDNA1[:split]
+    newDNA += concatDNA2[split:]
+    
+    return DnaStringToDnaArray(newDNA)
+
+#Transforme une ligne d'ADN en tableau d'ADN
+def DnaStringToDnaArray(str) :
+    arr = []
+    arr.append(str[:4])
+    for i in range(1, 7) : 
+        arr.append(str[4+(i-1)*8:4+i*8])
+    return arr
+
+#Détérmine la fitness de l'adn passer en parametre par rapport a l'adn parfait
+def fitness(currentDNA) :
+    fitnessScore = 0
+    #Concat les tableau d'adn
+    concatPerfectDNA = ''.join(perfectDNA)
+    concatDNA =  ''.join(currentDNA)
+    #Sur chaque bit
+    for i in range(len(concatPerfectDNA)) :
+        #on verifie si les bit son identique
+        if i < len(concatDNA) and concatPerfectDNA[i] == concatDNA[i] :
+            fitnessScore+=1
+            
+    #Retourne le score final
+    return fitnessScore;
 def generateDNA():
     nbArms = random.randint(0, 15)
     posArms = random.randint(0, 255)
@@ -26,13 +69,32 @@ def generateDNA():
     offsetY = random.randint(0, 255)
     castRadius = random.randint(0, 255)
     
-    geneticCode = [format(nbArms, "b"), format(posArms, "b"),format(scaleArmsX, "b"), 
-    format(scaleArmsY, "b"), format(scaleArmsZ, "b"), format(offsetY, "b"), format(castRadius, "b")]
-    
+    geneticCode = [format(nbArms, "04b"), format(posArms, "08b"),format(scaleArmsX, "08b"), 
+    format(scaleArmsY, "08b"), format(scaleArmsZ, "08b"), format(offsetY, "08b"), format(castRadius, "08b")]
     return geneticCode
 
-    
-def generateCreature(DNA, creaturePosition):
+def chooseRandomParents(parents):
+    a = 0
+    b = 0
+    while a == b:
+        a = random.randint(0, len(parents)-1)
+        b = random.randint(0, len(parents)-1)
+    return[parents[a],parents[b]]
+
+def generateTwoChilds(bestPopulation):
+    children = []
+    if bestPopulation is none:
+        pop[0] = generateDNA()
+        pop[1] = generateDNA()
+    else:
+        parents = chooseRandomParents(bestPopulation)
+        children = crossOver(parents[0],parents[1])
+        mutate(children)
+        
+def generatePopulation(size, bestPopulation):
+    print(todo)
+        
+def generateCreature(DNA, creaturePosition, creatureRotation):
     
     #int(input[], 2)
     nbPawPairs = int(DNA[0], 2)
@@ -146,15 +208,15 @@ def generateCreature(DNA, creaturePosition):
     #Head : 
     bpy.ops.object.editmode_toggle()
     translate(creaturePosition)
+    rotate(creatureRotation)
 
-def generateRandomPos(xRange,yRange,zRange):
+def randomVector3(xRange,yRange,zRange):
     return (random.random()*xRange*2-xRange,random.random()*yRange*2-yRange,random.random()*zRange*2-zRange)
 
 clearScene()
-generateCreature(generateDNA(), generateRandomPos(60,60,60))
-generateCreature(generateDNA(), generateRandomPos(60,60,60))
-generateCreature(generateDNA(), generateRandomPos(60,60,60))
-generateCreature(generateDNA(), generateRandomPos(60,60,60))
-generateCreature(generateDNA(), generateRandomPos(60,60,60))
-
-bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result.obj")
+#population = generatePopulationFromParents()
+generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
+generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
+generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
+generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
+generateCreature(generateDNA(), randomVector3(60,60,60), randomVector3(90,90,90))
