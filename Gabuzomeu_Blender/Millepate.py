@@ -156,3 +156,5 @@ generateCreature(generateDNA(), generateRandomPos(60,60,60))
 generateCreature(generateDNA(), generateRandomPos(60,60,60))
 generateCreature(generateDNA(), generateRandomPos(60,60,60))
 generateCreature(generateDNA(), generateRandomPos(60,60,60))
+
+bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result.obj")

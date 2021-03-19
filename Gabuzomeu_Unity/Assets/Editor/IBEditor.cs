@@ -8,10 +8,12 @@ using UnityEngine;
 public class IBEditor : Editor {
     private SerializedProperty _blenderPathProperty;
     private SerializedProperty _pyFilePathProperty;
+    private SerializedProperty _creaturesMaterialProperty;
 
     private void OnEnable() {
         _blenderPathProperty = serializedObject.FindProperty("blenderPath");
         _pyFilePathProperty = serializedObject.FindProperty("pyFilePath");
+        _creaturesMaterialProperty = serializedObject.FindProperty("materialForCreatures");
     }
     
     public override void OnInspectorGUI() {
@@ -32,6 +34,7 @@ public class IBEditor : Editor {
                 "\"" + EditorUtility.OpenFilePanel("Select python file", Path.GetDirectoryName(value.Trim('"')), "py") + "\"";
         }
         GUILayout.EndHorizontal();
+        EditorGUILayout.PropertyField(_creaturesMaterialProperty);
         if (GUILayout.Button("Run")) {
             ((IB) target).Run();
         }

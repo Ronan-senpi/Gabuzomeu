@@ -10,6 +10,7 @@ using Debug = UnityEngine.Debug;
 public class IB : MonoBehaviour {
     public string blenderPath;
     public string pyFilePath;
+    public Material materialForCreatures;
 
     public void Run() {
         try {
@@ -39,7 +40,15 @@ public class IB : MonoBehaviour {
             foreach (var file in files) {
                 if (Path.GetExtension(file) == ".obj") {
                     var obj = AssetDatabase.LoadAssetAtPath<GameObject>(file);
-                    Instantiate(obj, position, Quaternion.identity);
+                    var go = Instantiate(obj, position, Quaternion.identity);
+                    foreach (var meshRenderer in go.GetComponentsInChildren<MeshRenderer>()) {
+                        var mats = meshRenderer.sharedMaterials;
+                        for (var index = 0; index < mats.Length; index++) {
+                            mats[index] = materialForCreatures;
+                        }
+
+                        meshRenderer.sharedMaterials = mats;
+                    }
                     position.x += 2f;
                 }
             }
