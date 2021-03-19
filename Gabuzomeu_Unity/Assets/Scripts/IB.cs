@@ -36,20 +36,17 @@ public class IB : MonoBehaviour {
             if(errorLog != "") Debug.LogError(errorLog);
             AssetDatabase.Refresh();
             var files = Directory.GetFiles("Assets/Blender");
-            Vector3 position = Vector3.zero;
             foreach (var file in files) {
                 if (Path.GetExtension(file) == ".obj") {
                     var obj = AssetDatabase.LoadAssetAtPath<GameObject>(file);
-                    var go = Instantiate(obj, position, Quaternion.identity);
+                    var go = Instantiate(obj);
                     foreach (var meshRenderer in go.GetComponentsInChildren<MeshRenderer>()) {
                         var mats = meshRenderer.sharedMaterials;
                         for (var index = 0; index < mats.Length; index++) {
                             mats[index] = materialForCreatures;
                         }
-
                         meshRenderer.sharedMaterials = mats;
                     }
-                    position.x += 2f;
                 }
             }
         }

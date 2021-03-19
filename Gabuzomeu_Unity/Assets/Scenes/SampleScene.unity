@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.28773582, g: 0.6964606, b: 1, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.05
+  m_FogDensity: 0.001
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -121,7 +121,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &303686276
+--- !u!1 &600036380
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,8 +129,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 303686278}
-  - component: {fileID: 303686277}
+  - component: {fileID: 600036381}
+  - component: {fileID: 600036382}
   m_Layer: 0
   m_Name: BlenderHandler
   m_TagString: Untagged
@@ -138,36 +138,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &303686277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303686276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff10f2d7b15b7c949a4d6c4eea9789d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  blenderPath: '"C:/Program Files/Blender Foundation/Blender 2.92/blender.exe"'
-  pyFilePath: '"C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Blender/Millepate.py"'
-  materialForCreatures: {fileID: 2100000, guid: a14ad1b39582dea4295362f8870c2217,
-    type: 2}
---- !u!4 &303686278
+--- !u!4 &600036381
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303686276}
+  m_GameObject: {fileID: 600036380}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.3354635, y: -1.4545317, z: 7.616911}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &600036382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600036380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff10f2d7b15b7c949a4d6c4eea9789d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blenderPath: '"C:\Program Files\Blender Foundation\Blender 2.92\blender.exe"'
+  pyFilePath: '"C:\Users\pamar\Documents\Projets\Gabuzomeu\Gabuzomeu_Blender\Millepate.py"'
+  materialForCreatures: {fileID: 2100000, guid: a14ad1b39582dea4295362f8870c2217,
+    type: 2}
 --- !u!1 &653260035
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,8 +303,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 882452254}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 100, z: 0}
-  m_LocalScale: {x: 10000, y: 0.01, z: 10000}
+  m_LocalPosition: {x: 0, y: 500, z: 0}
+  m_LocalScale: {x: 5000, y: 1, z: 50000}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
