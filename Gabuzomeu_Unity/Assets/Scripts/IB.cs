@@ -1,41 +1,46 @@
 ﻿using UnityEngine;
 using System.Diagnostics;
 using System;
+using System.Threading;
+using Debug = UnityEngine.Debug;
 
 // ReSharper disable once InconsistentNaming
-public class IB : MonoBehaviour
-{
+public class IB : MonoBehaviour {
+    public string blenderPath;
+    public string pyFilePath;
 
-    // Use this for initialization
-    void Start()
-    {
-        try
-        {
-            Process myProcess = new Process();
-            myProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            myProcess.StartInfo.CreateNoWindow = true;
-            myProcess.StartInfo.UseShellExecute = false;
-            myProcess.StartInfo.FileName = "C:/Users/Alain/Desktop/Anim & IA 4A/2 PROGRANIMALS FUNKBOXING/callBlenderScript.bat";
-            myProcess.EnableRaisingEvents = true;
-            myProcess.Start();
-            myProcess.WaitForExit();
-            int exitCode = myProcess.ExitCode;
-            UnityEngine.Debug.Log(exitCode);
-            UnityEngine.Debug.Log("ok");
+    private void Awake() {
+        var thread = new Thread(Run);
+        thread.Start();
+    }
+    
+    private void Run() {
+        try {
+            // to add  --background
+            var processInfo = new ProcessStartInfo();
+            //"cmd.exe", 
+            processInfo.FileName = "cmd.exe";
+            processInfo.Arguments = "/C \"" + blenderPath + " --python " + pyFilePath + "\"";
+            processInfo.WindowStyle = ProcessWindowStyle.Maximized;
+            //processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.RedirectStandardOutput = true;
+            processInfo.RedirectStandardError = true;
+
+            var process = new Process();
+            process.StartInfo = processInfo;
+            process.EnableRaisingEvents = true;
+            process.Start();
+            process.WaitForExit();
+            var outBuffer = process.StandardOutput;
+            var errorBuffer = process.StandardError;
+            
+            Debug.Log(outBuffer.ReadToEnd());
+            var errorLog = errorBuffer.ReadToEnd();
+            if(errorLog == "") Debug.LogError(errorLog);
         }
-        catch (Exception e)
-        {
-            print(e);
+        catch (Exception e) {
+            Debug.LogError(e);
         }
     }
 }
-
-/* Au final pour vendredi à 15H30, CC1
-On est dans Unity , vous avez un bouton Import Creatures
-Ce bouton lance ce process, qui appel le fichier BAT
-Le BAT lance Blender en arrière-plan , qui crée des créatures
-Les créatures sont loader en tant qu'Asset dans Unity
-Demo dans Unity
-Scripts dans Blender
-Très modestement, ceci équivaut à faire une sorte de Blender Engine pour Unity
-(comme Houdini Engine)*/
