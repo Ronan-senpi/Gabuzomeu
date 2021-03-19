@@ -157,4 +157,21 @@ generateCreature(generateDNA(), generateRandomPos(60,60,60))
 generateCreature(generateDNA(), generateRandomPos(60,60,60))
 generateCreature(generateDNA(), generateRandomPos(60,60,60))
 
-bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result.obj")
+i = 0
+scene = bpy.context.scene
+for ob in scene.objects:
+    # make the current object active and select it
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+
+    # make sure that we only export meshes
+    if ob.type == 'MESH':
+        # export the currently selected object to its own file based on its name
+        bpy.ops.export_scene.obj(
+                filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj",
+                use_selection=True,
+                use_materials=False
+                )
+    # deselect the object and move on to another if any more are left
+    ob.select_set(True)
+    i += 1
