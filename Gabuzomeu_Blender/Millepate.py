@@ -1,6 +1,7 @@
 import bpy
 import mathutils
 from math import sqrt
+from math import floor
 from mathutils import Euler
 import random
 
@@ -21,7 +22,8 @@ def translate(vec):
 def rotate(rotation):
     bpy.context.active_object.rotation_euler = Euler(rotation, 'XYZ')
         
-perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
+#perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
+perfectDNA =  ['0000', '00111010', '01000100', '00001010', '00111110', '11001000', '10100000']
 
 
 def crossOver(DNA1, DNA2) : 
@@ -33,10 +35,11 @@ def crossOver(DNA1, DNA2) :
     if lenMax > 1 :
         lenMax -= 1
     split = random.randint(lenMin, lenMax)
-    newDNA = concatDNA1[:split]
-    newDNA += concatDNA2[split:]
-    
-    return DnaStringToDnaArray(newDNA)
+    newDNA1 = concatDNA1[:split]
+    newDNA1 += concatDNA2[split:]
+    newDNA2 = concatDNA2[:split]
+    newDNA2 += concatDNA1[split:]
+    return [DnaStringToDnaArray(newDNA1),DnaStringToDnaArray(newDNA2)]
 
 #Transforme une ligne d'ADN en tableau d'ADN
 def DnaStringToDnaArray(str) :
@@ -48,6 +51,7 @@ def DnaStringToDnaArray(str) :
 
 #Détérmine la fitness de l'adn passer en parametre par rapport a l'adn parfait
 def fitness(currentDNA) :
+    print("POUTRE EN BETON")
     fitnessScore = 0
     #Concat les tableau d'adn
     concatPerfectDNA = ''.join(perfectDNA)
@@ -59,6 +63,7 @@ def fitness(currentDNA) :
             fitnessScore+=1
             
     #Retourne le score final
+    print("fitness of " + str(currentDNA) + " : " + str(fitnessScore));
     return fitnessScore;
 
 def generateDNA():
@@ -82,16 +87,47 @@ def chooseRandomParents(parents):
         b = random.randint(0, len(parents)-1)
     return[parents[a],parents[b]]
 
+def mutation(geneticDNA, numberOfMutation):
+        
+    for i in range(numberOfMutation):
+        if(random.randint(0,100) < 10):
+            posX = random.randint(0, len(geneticDNA) - 1)
+            listDNA = list(geneticDNA[posX])
+            posY = random.randint(0, len(listDNA[posX]) - 1)
+            if(listDNA[posY] == "1"):
+                listDNA[posY] = "0"
+            else:
+                listDNA[posY] = "1"
+            geneticDNA.remove(geneticDNA[posX])
+            geneticDNA.insert(posX, "".join(listDNA))
+    return geneticDNA
+
 def generateTwoChilds(bestPopulation):
-    
     if bestPopulation is None:
         return [generateDNA(),generateDNA()]
     else:
         parents = chooseRandomParents(bestPopulation)
         children = crossOver(parents[0],parents[1])
-        return mutate(children) 
-        
-def generatePopulation(size, bestPopulation):
+        children[0] = mutation(children[0], 2)
+        children[1] = mutation(children[1], 2)
+        return children
+
+def choseBestBuddys(population, parentsAmount):
+    theBestsOnes = []
+    tuples = []
+    for DNA in population:
+        tuples.append( (fitness(DNA), population) )
+    sorted(tuples, key=lambda x: x[0])
+    for i in range(parentsAmount):
+        print("You are the choosen one Anakin : " + str(tuples[i][0]))
+        theBestsOnes.append(tuples[i][1])
+    return theBestsOnes
+  
+def generatePopulation(size, previousPopulation):
+    parents = None
+    if previousPopulation is not None:
+        parents = choseBestBuddys(previousPopulation,int(size/4))
+    
     newSize = size
     if size % 2 != 0 :
         newSize +=1
@@ -99,14 +135,12 @@ def generatePopulation(size, bestPopulation):
     count = 0
     population = []
     for i in range(newSize):
-        children = generateTwoChilds(bestPopulation)
+        children = generateTwoChilds(parents)
         population.append(children[0])
         count+=1
         if count < size:
             population.append(children[1])
             count+=1
-    for creatureDNA in population:
-        generateCreature(creatureDNA, randomVector3(60,60,60), randomVector3(90,90,90))
     return population
 
 
@@ -229,8 +263,21 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
 def randomVector3(xRange,yRange,zRange):
     return (random.random()*xRange*2-xRange,random.random()*yRange*2-yRange,random.random()*zRange*2-zRange)
 
+print("==================== BEGINING ====================")
+
 clearScene()
-generatePopulation(5,None)
+population = generatePopulation(20,None)
+generations = 20
+for i in range(generations):
+    population = generatePopulation(20,population)
+    
+for i in range(len(population)):
+    x = (i % 5)
+    y = floor(i / 5)
+    DNA = population[i]
+    print("("+str(x)+","+str(y)+")")
+    print(DNA)
+    generateCreature(DNA, (x * 50,y * 50,0), (0,0,0))
 
 #i = 0
 #scene = bpy.context.scene
