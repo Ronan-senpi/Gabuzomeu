@@ -7,13 +7,18 @@ using UnityEditor;
 using Debug = UnityEngine.Debug;
 
 // ReSharper disable once InconsistentNaming
-public class IB : MonoBehaviour {
+public class IB : MonoBehaviour
+{
     public string blenderPath;
     public string pyFilePath;
     public Material materialForCreatures;
 
-    public void Run() {
-        try {
+    private Process _process;
+
+    public void Run()
+    {
+        try
+        {
             var processInfo = new ProcessStartInfo();
             processInfo.FileName = "cmd.exe";
             processInfo.Arguments = "/C \"" + blenderPath + " --background --python " + pyFilePath + "\"";
@@ -23,35 +28,48 @@ public class IB : MonoBehaviour {
             processInfo.RedirectStandardOutput = true;
             processInfo.RedirectStandardError = true;
 
-            var process = new Process();
-            process.StartInfo = processInfo;
-            process.EnableRaisingEvents = true;
-            process.Start();
-            process.WaitForExit();
-            var outBuffer = process.StandardOutput;
-            var errorBuffer = process.StandardError;
+            _process = new Process();
+            _process.StartInfo = processInfo;
+            _process.Start();
+            _process.WaitForExit();
+            AssetDatabase.Refresh();
             
+            var outBuffer = _process.StandardOutput;
+            var errorBuffer = _process.StandardError;
+
             Debug.Log(outBuffer.ReadToEnd());
             var errorLog = errorBuffer.ReadToEnd();
-            if(errorLog != "") Debug.LogError(errorLog);
-            AssetDatabase.Refresh();
+            if (errorLog != "") Debug.LogError(errorLog);
+            
             var files = Directory.GetFiles("Assets/Blender");
-            foreach (var file in files) {
-                if (Path.GetExtension(file) == ".obj") {
+            foreach (var file in files)
+            {
+                if (Path.GetExtension(file) == ".obj")
+                {
+                    AssetDatabase.ImportAsset(file);
                     var obj = AssetDatabase.LoadAssetAtPath<GameObject>(file);
                     var go = Instantiate(obj);
-                    foreach (var meshRenderer in go.GetComponentsInChildren<MeshRenderer>()) {
+                    foreach (var meshRenderer in go.GetComponentsInChildren<MeshRenderer>())
+                    {
                         var mats = meshRenderer.sharedMaterials;
-                        for (var index = 0; index < mats.Length; index++) {
+                        for (var index = 0; index < mats.Length; index++)
+                        {
                             mats[index] = materialForCreatures;
                         }
+
                         meshRenderer.sharedMaterials = mats;
                     }
                 }
             }
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Debug.LogError(e);
         }
+    }
+
+    private void OnProcessExit(object sender, EventArgs e)
+    {
+        
     }
 }

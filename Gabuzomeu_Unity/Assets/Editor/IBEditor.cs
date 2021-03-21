@@ -22,16 +22,20 @@ public class IBEditor : Editor {
         EditorGUILayout.PropertyField(_blenderPathProperty);
         if (GUILayout.Button("Browse")) {
             string value = _blenderPathProperty.stringValue;
+            value = value.Trim('"');
+            if (value == "") value = "/";
             _blenderPathProperty.stringValue =
-                "\"" + EditorUtility.OpenFilePanel("Select blender app", Path.GetDirectoryName(value.Trim('"')), "exe") + "\"";
+                "\"" + EditorUtility.OpenFilePanel("Select blender app", Path.GetDirectoryName(value), "exe") + "\"";
         }
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         EditorGUILayout.PropertyField(_pyFilePathProperty);
         if (GUILayout.Button("Browse")) {
             var value = _pyFilePathProperty.stringValue;
+            value = value.Trim('"');
+            if (value == "") value = "/";
             _pyFilePathProperty.stringValue =
-                "\"" + EditorUtility.OpenFilePanel("Select python file", Path.GetDirectoryName(value.Trim('"')), "py") + "\"";
+                "\"" + EditorUtility.OpenFilePanel("Select python file", Path.GetDirectoryName(value), "py") + "\"";
         }
         GUILayout.EndHorizontal();
         EditorGUILayout.PropertyField(_creaturesMaterialProperty);
