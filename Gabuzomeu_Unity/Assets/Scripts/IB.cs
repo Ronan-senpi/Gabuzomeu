@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System;
 using System.IO;
-using System.Threading;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
@@ -28,6 +27,7 @@ public class IB : MonoBehaviour
             processInfo.RedirectStandardOutput = true;
             processInfo.RedirectStandardError = true;
 
+            Directory.CreateDirectory("Assets/Blender");
             _process = new Process();
             _process.StartInfo = processInfo;
             _process.Start();
@@ -40,7 +40,7 @@ public class IB : MonoBehaviour
             Debug.Log(outBuffer.ReadToEnd());
             var errorLog = errorBuffer.ReadToEnd();
             if (errorLog != "") Debug.LogError(errorLog);
-            
+
             var files = Directory.GetFiles("Assets/Blender");
             foreach (var file in files)
             {

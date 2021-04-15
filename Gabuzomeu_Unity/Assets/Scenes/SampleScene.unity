@@ -164,8 +164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff10f2d7b15b7c949a4d6c4eea9789d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blenderPath: '"D:/Applications/Blender Foundation/Blender/blender.exe"'
-  pyFilePath: '"D:/Documents/Projets/Gabuzomeu/Gabuzomeu_Blender/Millepate.py"'
+  blenderPath: '"C:/Program Files/Blender Foundation/Blender 2.92/blender.exe"'
+  pyFilePath: '"C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Blender/Millepate.py"'
   materialForCreatures: {fileID: 2100000, guid: a14ad1b39582dea4295362f8870c2217,
     type: 2}
 --- !u!1 &653260035
