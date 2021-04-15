@@ -23,9 +23,9 @@ public class IB : MonoBehaviour
             processInfo.Arguments = "/C \"" + blenderPath + " --background --python " + pyFilePath + "\"";
             processInfo.WindowStyle = ProcessWindowStyle.Hidden;
             processInfo.CreateNoWindow = true;
-            processInfo.UseShellExecute = false;
-            processInfo.RedirectStandardOutput = true;
-            processInfo.RedirectStandardError = true;
+            //processInfo.UseShellExecute = false;
+            //processInfo.RedirectStandardOutput = true;
+            //processInfo.RedirectStandardError = true;
 
             Directory.CreateDirectory("Assets/Blender");
             _process = new Process();
@@ -34,12 +34,12 @@ public class IB : MonoBehaviour
             _process.WaitForExit();
             AssetDatabase.Refresh();
             
-            var outBuffer = _process.StandardOutput;
-            var errorBuffer = _process.StandardError;
+            //var outBuffer = _process.StandardOutput;
+            //var errorBuffer = _process.StandardError;
 
-            Debug.Log(outBuffer.ReadToEnd());
-            var errorLog = errorBuffer.ReadToEnd();
-            if (errorLog != "") Debug.LogError(errorLog);
+            //Debug.Log(outBuffer.ReadToEnd());
+            //var errorLog = errorBuffer.ReadToEnd();
+            //if (errorLog != "") Debug.LogError(errorLog);
 
             var files = Directory.GetFiles("Assets/Blender");
             foreach (var file in files)
@@ -66,10 +66,5 @@ public class IB : MonoBehaviour
         {
             Debug.LogError(e);
         }
-    }
-
-    private void OnProcessExit(object sender, EventArgs e)
-    {
-        
     }
 }
