@@ -106,7 +106,14 @@ def generateTwoChilds(bestPopulation):
     if bestPopulation is None:
         return [generateDNA(),generateDNA()]
     else:
+        
+        print("===========================bestPopulation====================")
+        print(bestPopulation)
+        print("===========================bestPopulation====================")
         parents = chooseRandomParents(bestPopulation)
+        print("===========================parents====================")
+        print(parents)
+        print("===========================parents====================")
         children = crossOver(parents[0],parents[1])
         children[0] = mutation(children[0], 2)
         children[1] = mutation(children[1], 2)
@@ -116,10 +123,10 @@ def choseBestBuddys(population, parentsAmount):
     theBestsOnes = []
     tuples = []
     for DNA in population:
-        tuples.append( (fitness(DNA), population) )
+        tuples.append( (fitness(DNA), DNA) )
     sorted(tuples, key=lambda x: x[0])
     for i in range(parentsAmount):
-        print("You are the choosen one Anakin : " + str(tuples[i][0]))
+        print("You are the choosen one Anakin : " + str(tuples[i]))
         theBestsOnes.append(tuples[i][1])
     return theBestsOnes
   
@@ -278,7 +285,8 @@ for i in range(len(population)):
     print("("+str(x)+","+str(y)+")")
     print(DNA)
     generateCreature(DNA, (x * 50,y * 50,0), (0,0,0))
-
+'''
+print("==================== OBJ ====================")
 i = 0
 scene = bpy.context.scene
 for ob in scene.objects:
@@ -294,4 +302,4 @@ for ob in scene.objects:
         bpy.ops.export_scene.obj(filepath="D:/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj", use_selection=True, use_materials=False)
     # deselect the object and move on to another if any more are left
     ob.select_set(False)
-    i += 1
+    i += 1'''
