@@ -50,6 +50,10 @@ bpy.ops.object.modifier_add(type='SKIN')
 bpy.context.object.modifiers["Skin"].use_smooth_shade = True
 
 bpy.ops.object.skin_armature_create(modifier="Skin")
+#fusione armature et mesh
+bpy.data.objects[bpy.data.collections[0].all_objects[1].name].select_set(True)
+bpy.data.objects[bpy.data.collections[0].all_objects[0].name].select_set(True)
+bpy.ops.object.parent_set(type='ARMATURE_AUTO')
 
 '''
 Next : 
