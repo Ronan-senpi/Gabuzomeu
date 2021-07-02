@@ -4,17 +4,12 @@ from math import sqrt
 from math import floor
 from mathutils import Euler
 import random
-
 def clearScene():
-    for collection in bpy.data.collections:
-        #Parcourir tous les objets
-        for obj in collection.all_objects:
-            #Selectionner l'objet
-            bpy.data.objects[obj.name].select_set(True)
-        
-        
-    #End : Delete every object in scenes
-    bpy.ops.object.delete(use_global=False, confirm=False)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    for obj in bpy.context.scene.objects:
+        obj.select_set(True)
+
+    bpy.ops.object.delete()
 
 def translate(vec):
     bpy.ops.transform.translate(value=vec)
@@ -23,7 +18,9 @@ def rotate(rotation):
     bpy.context.active_object.rotation_euler = Euler(rotation, 'XYZ')
         
 #perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
-perfectDNA =  ['0000', '00111010', '01000100', '00001010', '00111110', '11001000']
+
+                #nbArms, vertebralLenght, shoulderLength, armLength, abdomenFactor, abdomenRadius
+perfectDNA =  ['0110', '11100100', '01100100', '10110011', '01001110', '10011000']
 
 
 def crossOver(DNA1, DNA2) : 
@@ -45,7 +42,7 @@ def crossOver(DNA1, DNA2) :
 def DnaStringToDnaArray(str) :
     arr = []
     arr.append(str[:4])
-    for i in range(1, 7) : 
+    for i in range(1, 6) : 
         arr.append(str[4+(i-1)*8:4+i*8])
     return arr
 
@@ -90,6 +87,8 @@ def mutation(geneticDNA, numberOfMutation):
     for i in range(numberOfMutation):
         if(random.randint(0,100) < 10):
             posX = random.randint(0, len(geneticDNA) - 1)
+            print("size of random")
+            print(posX)
             listDNA = list(geneticDNA[posX])
             posY = random.randint(0, len(listDNA[posX]) - 1)
             if(listDNA[posY] == "1"):
@@ -102,20 +101,18 @@ def mutation(geneticDNA, numberOfMutation):
 
 def generateTwoChilds(bestPopulation):
     if bestPopulation is None:
+        print("best is none")
         return [generateDNA(),generateDNA()]
     else:
         
-      #  print("===========================bestPopulation====================")
-      #  print(bestPopulation)
-      #  print("===========================bestPopulation====================")
-      
-      #  print("===========================parents====================")
-
-     #   print("===========================parents====================")
-        print("Best Population = " + bestPopulation)
+        print("===========================bestPopulation====================")
+        print(bestPopulation)
         parents = chooseRandomParents(bestPopulation)
-        print("¨Parents = " + parents)
+        print("===========================parents====================")
+        print(parents)
         children = crossOver(parents[0],parents[1])
+        print("===========================children====================")
+        print(children)
         children[0] = mutation(children[0], 2)
         children[1] = mutation(children[1], 2)
         return children
@@ -154,32 +151,24 @@ def generatePopulation(size, previousPopulation):
 
 def generateCreature(DNA, creaturePosition, creatureRotation):
     
-    #int(input[], 2)
-    nbPawPairs = int(DNA[0], 2)
-
-                  #    [-10,0] 
-    posArmX = int(DNA[1], 2) / 256.0 * 10 -10
-    positionArmOffset = (posArmX, 0, 0)
-
-    #               [0,1][0,1][0,1]
-    scaleArmX = int(DNA[2], 2) / 256.0
-    scaleArmY = int(DNA[3], 2) / 256.0
-    scaleArmZ = int(DNA[4], 2) / 256.0
-    scaleArmOffset = (scaleArmX, scaleArmY, scaleArmZ)
-
-    #             [0.1,2.7]
-    offsetY = int(DNA[5], 2) / 256.0 * 2.6 + 0.1
-    arrayOffset = (0, offsetY, 0)
-    mergeDetection = sqrt(arrayOffset[0]*arrayOffset[0] + arrayOffset[1]*arrayOffset[1] + arrayOffset[2]*arrayOffset[2])
-    mergeDetection = mergeDetection + mergeDetection*mergeDetection/10
-
-    castRadius = int(DNA[6], 2) / 256.0 * 30
-
+    nbArms = int(DNA[0], 2)
+    vertebraLength = int(DNA[1], 2) / 256.0 * 10 -10
+    shoulderLength = int(DNA[2], 2) / 256.0
+    armLength = int(DNA[3], 2) / 256.0
+    abdomenFactor = int(DNA[4], 2) / 255.0 * 4 + 2
+    abdomenRadius = int(DNA[5], 2) / 255.0 * 3 + 2
+    print("=================VALUE=================")
+    print(nbArms)
+    print(vertebraLength)
+    print(shoulderLength)
+    print(armLength)
+    print(abdomenFactor)
+    print(abdomenRadius)
     #Créer un cube
     bpy.ops.mesh.primitive_cube_add(
         size=2, enter_editmode=False, align="WORLD", location=(0, 0, 0), scale=(1, 1, 1)
     )
-    #passe ne mode edit
+    #passe en mode edit
     bpy.ops.object.editmode_toggle()
     #fusione le cube en un point, pour pouvoir extrude sur 1 point plutot qu'une face
     #pour pouvoir faire les bones plus tard
@@ -196,7 +185,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (0, -1, -0), #Algo gen (Doit TOUJOURS ETRE EN Y)
+            "value": (0, vertebraLength, -0), #Algo gen (Doit TOUJOURS ETRE EN Y)
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -229,7 +218,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (-1, -0, -0), #Algo gen
+            "value": (-shoulderLength, -0, -0), #Algo gen
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -263,7 +252,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (0, -0, -1), #Algo gen
+            "value": (0, -0, -armLength), #Algo gen
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -297,7 +286,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (0, -0, 1), #Algo gen (le vecteur negatif de 2G)
+            "value": (0, -0, armLength), #Algo gen (le vecteur negatif de 2G)
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -331,7 +320,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (1, -0, 0),#Algo gen (le vecteur negatif de 1G)
+            "value": (shoulderLength, -0, 0),#Algo gen (le vecteur negatif de 1G)
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -365,7 +354,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (1, -0, 0),#Algo gen 
+            "value": (shoulderLength, -0, 0),#Algo gen 
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -398,7 +387,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
             "mirror": False,
         },
         TRANSFORM_OT_translate={
-            "value": (0, -0, -1),#Algo gen 
+            "value": (0, -0, -armLength),#Algo gen 
             "orient_type": "GLOBAL",
             "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
             "orient_matrix_type": "GLOBAL",
@@ -438,18 +427,18 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
     bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
     bpy.context.object.modifiers["Array"].relative_offset_displace[1] = -1 # Corespond au Y de la position de la tête
     bpy.context.object.modifiers["Array"].relative_offset_displace[2] = 0
-    bpy.context.object.modifiers["Array"].count = 10 #algo gen
+    bpy.context.object.modifiers["Array"].count = nbArms #algo gen
     bpy.context.object.modifiers["Array"].use_merge_vertices = True
 
     #Applique l'array modifier 
-    bpy.ops.object.modifier_apply(modifier="Array", report=True)
-    #End : Array modifier
-
-    #Place la créature au centre de la scene
+    bpy.ops.object.modifier_apply(modifier="Array", report=True) 
+    #End : Array modifier 
+ 
+    #Place la créature au centre de la scene 
     bpy.ops.object.editmode_toggle()
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.transform.translate(
-        value=(0, 5, 1), #(0, (longeurTete * NombrePairePate)/2, 1)
+        value=(0, -(vertebraLength * nbArms) / 2, 1), #(0, (longeurTete * NombrePairePate)/2, 1)
         orient_type="GLOBAL",
         orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
         orient_matrix_type="GLOBAL",
@@ -464,8 +453,8 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
 
     bpy.ops.object.editmode_toggle()
     bpy.ops.object.modifier_add(type="CAST")
-    bpy.context.object.modifiers["Cast"].factor = 3.25 #Algo gen
-    bpy.context.object.modifiers["Cast"].radius = 2.7 #Algo gen
+    bpy.context.object.modifiers["Cast"].factor = abdomenFactor #Algo gen
+    bpy.context.object.modifiers["Cast"].radius = abdomenRadius #Algo gen
 
     #Créer Le model 
     bpy.ops.object.modifier_add(type="SKIN")
@@ -482,7 +471,7 @@ def randomVector3(xRange,yRange,zRange):
 
 #print("==================== BEGINING ====================")
 
-clearScene()
+#clearScene()
 population = generatePopulation(20,None)
 generations = 20
 for i in range(generations):
@@ -508,9 +497,9 @@ for ob in scene.objects:
     ob.select_set(True)
 
     #make sure that we only export meshes
-    if ob.type == 'MESH':
+  #  if ob.type == 'MESH':
     #export the currently selected object to its own file based on its name
-        bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj", use_selection=True, use_materials=False)
+     #  bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj", use_selection=True, use_materials=False)
     # deselect the object and move on to another if any more are left
     ob.select_set(False)
     i += 1
