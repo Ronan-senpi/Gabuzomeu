@@ -23,14 +23,14 @@ def rotate(rotation):
     bpy.context.active_object.rotation_euler = Euler(rotation, 'XYZ')
         
 #perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
-perfectDNA =  ['0000', '00111010', '01000100', '00001010', '00111110', '11001000', '10100000']
+perfectDNA =  ['0000', '00111010', '01000100', '00001010', '00111110', '11001000']
 
 
 def crossOver(DNA1, DNA2) : 
     #transofme le tableau d'adn en un string
     concatDNA1 = ''.join(DNA1)
     concatDNA2 = ''.join(DNA2)
-    lenMin = 1;
+    lenMin = 1
     lenMax = min(len(concatDNA1), len(concatDNA2))
     if lenMax > 1 :
         lenMax -= 1
@@ -51,7 +51,6 @@ def DnaStringToDnaArray(str) :
 
 #Détérmine la fitness de l'adn passer en parametre par rapport a l'adn parfait
 def fitness(currentDNA) :
-    print("POUTRE EN BETON")
     fitnessScore = 0
     #Concat les tableau d'adn
     concatPerfectDNA = ''.join(perfectDNA)
@@ -63,20 +62,19 @@ def fitness(currentDNA) :
             fitnessScore+=1
             
     #Retourne le score final
-    print("fitness of " + str(currentDNA) + " : " + str(fitnessScore));
-    return fitnessScore;
+  #  print("fitness of " + str(currentDNA) + " : " + str(fitnessScore))
+    return fitnessScore
 
 def generateDNA():
     nbArms = random.randint(0, 15)
-    posArms = random.randint(0, 255)
-    scaleArmsX = random.randint(0, 255)
-    scaleArmsY = random.randint(0, 255)
-    scaleArmsZ = random.randint(0, 255)
-    offsetY = random.randint(0, 255)
-    castRadius = random.randint(0, 255)
+    vertebraLength = random.randint(0,255)
+    shoulderLength = random.randint(0,255)
+    armLength = random.randint(0,255)
+    abdomenFactor = random.randint(0,255)
+    abdomenRadius = random.randint(0,255)
     
-    geneticCode = [format(nbArms, "04b"), format(posArms, "08b"),format(scaleArmsX, "08b"), 
-    format(scaleArmsY, "08b"), format(scaleArmsZ, "08b"), format(offsetY, "08b"), format(castRadius, "08b")]
+    geneticCode = [format(nbArms, "04b"), format(vertebraLength, "08b"),format(shoulderLength, "08b"), 
+    format(armLength, "08b"), format(abdomenFactor, "08b"), format(abdomenRadius, "08b")]
     return geneticCode
 
 def chooseRandomParents(parents):
@@ -107,13 +105,16 @@ def generateTwoChilds(bestPopulation):
         return [generateDNA(),generateDNA()]
     else:
         
-        print("===========================bestPopulation====================")
-        print(bestPopulation)
-        print("===========================bestPopulation====================")
+      #  print("===========================bestPopulation====================")
+      #  print(bestPopulation)
+      #  print("===========================bestPopulation====================")
+      
+      #  print("===========================parents====================")
+
+     #   print("===========================parents====================")
+        print("Best Population = " + bestPopulation)
         parents = chooseRandomParents(bestPopulation)
-        print("===========================parents====================")
-        print(parents)
-        print("===========================parents====================")
+        print("¨Parents = " + parents)
         children = crossOver(parents[0],parents[1])
         children[0] = mutation(children[0], 2)
         children[1] = mutation(children[1], 2)
@@ -126,7 +127,7 @@ def choseBestBuddys(population, parentsAmount):
         tuples.append( (fitness(DNA), DNA) )
     sorted(tuples, key=lambda x: x[0])
     for i in range(parentsAmount):
-        print("You are the choosen one Anakin : " + str(tuples[i]))
+        #print("You are the choosen one Anakin : " + str(tuples[i]))
         theBestsOnes.append(tuples[i][1])
     return theBestsOnes
   
@@ -174,103 +175,312 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
 
     castRadius = int(DNA[6], 2) / 256.0 * 30
 
-
-    basePaw = (0.5,0.5,0.5)
-    #Ajouter un cube
-    bpy.ops.mesh.primitive_cube_add(size=2,
-                                    enter_editmode=False,
-                                    align='WORLD',
-                                    location=(0, 0, 0),
-                                    scale=(1, 2, 1))
-
-    #select cube
-    obj = bpy.context.active_object
-
-    #passe en edit
+    #Créer un cube
+    bpy.ops.mesh.primitive_cube_add(
+        size=2, enter_editmode=False, align="WORLD", location=(0, 0, 0), scale=(1, 1, 1)
+    )
+    #passe ne mode edit
     bpy.ops.object.editmode_toggle()
+    #fusione le cube en un point, pour pouvoir extrude sur 1 point plutot qu'une face
+    #pour pouvoir faire les bones plus tard
+    mesh = bpy.context.active_object
+    bpy.ops.mesh.merge(type="CENTER")
+    bpy.ops.mesh.select_all(action="SELECT")
 
-    bpy.ops.mesh.select_all(action='SELECT')
+    #Start: du corps de base
+    #On creer la "tête" de la créature
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (0, -1, -0), #Algo gen (Doit TOUJOURS ETRE EN Y)
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
+    #On créer l'articulation 1G (L'épaule ??)
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (-1, -0, -0), #Algo gen
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
 
-    bpy.ops.transform.translate(value=(-0.5, 0, 0), orient_type='GLOBAL')
+    #On créer l'articulation 2G (Le bras ??)
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (0, -0, -1), #Algo gen
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
+    #On remote le long l'articulation 2G (Le bras ??)
+    #ce point sera supp plus tard
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (0, -0, 1), #Algo gen (le vecteur negatif de 2G)
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
+    #On remote le long l'articulation 1G (L'épaule ??)
+    #ce point sera supp plus tard
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (1, -0, 0),#Algo gen (le vecteur negatif de 1G)
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
 
-    #Start : Select Faceg
-    bpy.ops.object.mode_set(mode = 'EDIT') 
-    bpy.ops.mesh.select_mode(type="FACE")
-    bpy.ops.mesh.select_all(action = 'DESELECT')
-    bpy.ops.object.mode_set(mode = 'OBJECT')
-    obj.data.polygons[0].select = True
-    bpy.ops.object.mode_set(mode = 'EDIT') 
-    #end : Select face
+    #On créer l'articulation 1D (L'épaule ??)
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (1, -0, 0),#Algo gen 
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
+    #On créer l'articulation 2D (L'épaule ??)
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={
+            "use_normal_flip": False,
+            "use_dissolve_ortho_edges": False,
+            "mirror": False,
+        },
+        TRANSFORM_OT_translate={
+            "value": (0, -0, -1),#Algo gen 
+            "orient_type": "GLOBAL",
+            "orient_matrix": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            "orient_matrix_type": "GLOBAL",
+            "constraint_axis": (False, False, True),
+            "mirror": False,
+            "use_proportional_edit": False,
+            "proportional_edit_falloff": "SMOOTH",
+            "proportional_size": 1,
+            "use_proportional_connected": False,
+            "use_proportional_projected": False,
+            "snap": False,
+            "snap_target": "CLOSEST",
+            "snap_point": (0, 0, 0),
+            "snap_align": False,
+            "snap_normal": (0, 0, 0),
+            "gpencil_strokes": False,
+            "cursor_transform": False,
+            "texture_space": False,
+            "remove_on_cancel": False,
+            "release_confirm": False,
+            "use_accurate": False,
+            "use_automerge_and_split": False,
+        },
+    )
+    #supprimes les points -1G et -2G 
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles()
+    #Start: du corps de base
 
-    #Start : Base pate 
-    bpy.ops.mesh.extrude_region_move(TRANSFORM_OT_translate={
-                                                "value":(0, 0, 0),
-                                                "orient_type":'NORMAL'})
-    bpy.ops.transform.resize(value=basePaw,
-                             orient_type='GLOBAL',
-                             orient_matrix=((1, 0, 0),
-                                            (0, 1, 0),
-                                            (0, 0, 1)),
-                             orient_matrix_type='GLOBAL',
-                             mirror=True,
-                             use_proportional_edit=False,
-                             proportional_edit_falloff='SMOOTH',
-                             proportional_size=1,
-                             use_proportional_connected=False,
-                             use_proportional_projected=False)
-                             
-    #end : Base pate
+    # editmode
+    bpy.ops.object.editmode_toggle()
+    # objectmode
 
-    #Start : creating paw
-    for i in range(3) :
-        bpy.ops.mesh.extrude_region_move(TRANSFORM_OT_translate={
-                                                "value":(-i, 0, 1),
-                                                "orient_type":'NORMAL'})
-        pos = (positionArmOffset[0],positionArmOffset[1],positionArmOffset[2]*i/2)                                                                          
-        bpy.ops.transform.translate(value=pos,orient_type='GLOBAL');#resize(value=positionPaw);
-        bpy.ops.transform.resize(value=scaleArmOffset,orient_type='GLOBAL');#resize(value=positionPaw);
-    #end : creating paw
-
-    #Start : le mirroir
-    bpy.ops.object.modifier_add(type='MIRROR')
-    bpy.context.object.modifiers["Mirror"].use_clip = True
-    #End : le mirroir
-    #Start : Array
-    bpy.ops.object.modifier_add(type='ARRAY')
-    bpy.context.object.modifiers["Array"].relative_offset_displace = arrayOffset
+    #Start : Array modifier
+    #Pour le nombre de paire de pattes 
+    bpy.ops.object.modifier_add(type="ARRAY")
+    bpy.context.object.modifiers["Array"].relative_offset_displace[0] = 0
+    bpy.context.object.modifiers["Array"].relative_offset_displace[1] = -1 # Corespond au Y de la position de la tête
+    bpy.context.object.modifiers["Array"].relative_offset_displace[2] = 0
+    bpy.context.object.modifiers["Array"].count = 10 #algo gen
     bpy.context.object.modifiers["Array"].use_merge_vertices = True
-    bpy.context.object.modifiers["Array"].use_merge_vertices_cap = True
-    bpy.context.object.modifiers["Array"].merge_threshold = mergeDetection
 
-    bpy.context.object.modifiers["Array"].count = nbPawPairs
-    #End :Array
+    #Applique l'array modifier 
+    bpy.ops.object.modifier_apply(modifier="Array", report=True)
+    #End : Array modifier
 
-    #Start : cast
-    bpy.ops.object.modifier_add(type='CAST')
-    bpy.context.object.modifiers["Cast"].name = "CastSphere"
-    bpy.context.object.modifiers["CastSphere"].factor = 0
-    bpy.context.object.modifiers["CastSphere"].radius = 5
-
-
-    bpy.ops.object.modifier_add(type='CAST')
-    bpy.context.object.modifiers["Cast"].name = "CastCylinder"
-    bpy.context.object.modifiers["CastCylinder"].cast_type = 'CYLINDER'
-    bpy.context.object.modifiers["CastCylinder"].factor = 0.5
-    bpy.context.object.modifiers["CastCylinder"].radius = castRadius
-    #end : cast
-    #Start : sub division
-    bpy.ops.object.modifier_add(type='SUBSURF')
-    #End : sub division 
-
-    #Head : 
+    #Place la créature au centre de la scene
     bpy.ops.object.editmode_toggle()
-    translate(creaturePosition)
-    rotate(creatureRotation)
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.transform.translate(
+        value=(0, 5, 1), #(0, (longeurTete * NombrePairePate)/2, 1)
+        orient_type="GLOBAL",
+        orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+        orient_matrix_type="GLOBAL",
+        constraint_axis=(False, True, False),
+        mirror=True,
+        use_proportional_edit=False,
+        proportional_edit_falloff="SMOOTH",
+        proportional_size=1,
+        use_proportional_connected=False,
+        use_proportional_projected=False,
+    )
+
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.object.modifier_add(type="CAST")
+    bpy.context.object.modifiers["Cast"].factor = 3.25 #Algo gen
+    bpy.context.object.modifiers["Cast"].radius = 2.7 #Algo gen
+
+    #Créer Le model 
+    bpy.ops.object.modifier_add(type="SKIN")
+    bpy.context.object.modifiers["Skin"].use_smooth_shade = True
+    bpy.ops.object.skin_armature_create(modifier="Skin")
+
+    # fusione armature et mesh
+    bpy.data.objects[bpy.data.collections[0].all_objects[1].name].select_set(True)
+    bpy.data.objects[bpy.data.collections[0].all_objects[0].name].select_set(True)
+    bpy.ops.object.parent_set(type="ARMATURE_AUTO")
 
 def randomVector3(xRange,yRange,zRange):
     return (random.random()*xRange*2-xRange,random.random()*yRange*2-yRange,random.random()*zRange*2-zRange)
 
-print("==================== BEGINING ====================")
+#print("==================== BEGINING ====================")
 
 clearScene()
 population = generatePopulation(20,None)
@@ -282,12 +492,12 @@ for i in range(len(population)):
     x = (i % 5)
     y = floor(i / 5)
     DNA = population[i]
-    print("("+str(x)+","+str(y)+")")
-    print(DNA)
+   # print("("+str(x)+","+str(y)+")")
+ #   print(DNA)
     generateCreature(DNA, (x * 50,y * 50,0), (0,0,0))
 
 
-print("==================== OBJ ====================")
+#print("==================== OBJ ====================")
 i = 0
 scene = bpy.context.scene
 for ob in scene.objects:
