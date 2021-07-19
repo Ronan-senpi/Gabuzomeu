@@ -20,7 +20,7 @@ def rotate(rotation):
 #perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
 
                 #nbArms, vertebralLenght, shoulderLength, armLength, abdomenFactor, abdomenRadius
-perfectDNA =  ['1001', '11101101', '11011110', '10000001', '11010111', '11111110']
+perfectDNA =  ['1011', '11101100', '00001101', '00001100', '01000101', '11101111']
 
 
 def crossOver(DNA1, DNA2) : 
@@ -113,8 +113,8 @@ def generateTwoChilds(bestPopulation):
         children = crossOver(parents[0],parents[1])
         print("===========================children====================")
         print(children)
-        children[0] = mutation(children[0], 2)
-        children[1] = mutation(children[1], 2)
+        children[0] = mutation(children[0], 3)
+        children[1] = mutation(children[1], 3)
         return children
 
 def choseBestBuddys(population, parentsAmount):
@@ -151,8 +151,8 @@ def generatePopulation(size, previousPopulation):
 
 def generateCreature(DNA, creaturePosition, creatureRotation):
     
-    nbArms = int(int(DNA[0], 2)*0.5)
-    vertebraLength = int(DNA[1], 2) / 256.0 * 10 -10
+    nbArms = int(int(DNA[0], 2))
+    vertebraLength = int(DNA[1], 2) / 256.0 * 5-5
     shoulderLength = int(DNA[2], 2) / 256.0 * 5
     armLength = int(DNA[3], 2) / 256.0 * 10
     abdomenFactor = int(DNA[4], 2) / 255.0 * 5 + 10
@@ -474,7 +474,7 @@ def randomVector3(xRange,yRange,zRange):
 
 #clearScene()
 population = generatePopulation(8,None)
-generations = 20
+generations = 50
 for i in range(generations):
     population = generatePopulation(8,population)
     
