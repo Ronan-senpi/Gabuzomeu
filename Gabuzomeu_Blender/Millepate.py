@@ -20,7 +20,7 @@ def rotate(rotation):
 #perfectDNA = ['0110', '11100100', '01100100', '10110011', '01001110', '10011000', '11001011']
 
                 #nbArms, vertebralLenght, shoulderLength, armLength, abdomenFactor, abdomenRadius
-perfectDNA =  ['0110', '11100100', '01100100', '10110011', '01001110', '10011000']
+perfectDNA =  ['1001', '11101101', '11011110', '10000001', '11010111', '11111110']
 
 
 def crossOver(DNA1, DNA2) : 
@@ -151,12 +151,12 @@ def generatePopulation(size, previousPopulation):
 
 def generateCreature(DNA, creaturePosition, creatureRotation):
     
-    nbArms = int(DNA[0], 2)
+    nbArms = int(int(DNA[0], 2)*0.5)
     vertebraLength = int(DNA[1], 2) / 256.0 * 10 -10
-    shoulderLength = int(DNA[2], 2) / 256.0
-    armLength = int(DNA[3], 2) / 256.0
-    abdomenFactor = int(DNA[4], 2) / 255.0 * 4 + 2
-    abdomenRadius = int(DNA[5], 2) / 255.0 * 3 + 2
+    shoulderLength = int(DNA[2], 2) / 256.0 * 5
+    armLength = int(DNA[3], 2) / 256.0 * 10
+    abdomenFactor = int(DNA[4], 2) / 255.0 * 5 + 10
+    abdomenRadius = int(DNA[5], 2) / 255.0 * 10 + 2
     print("=================VALUE=================")
     print(nbArms)
     print(vertebraLength)
@@ -455,6 +455,7 @@ def generateCreature(DNA, creaturePosition, creatureRotation):
     bpy.ops.object.modifier_add(type="CAST")
     bpy.context.object.modifiers["Cast"].factor = abdomenFactor #Algo gen
     bpy.context.object.modifiers["Cast"].radius = abdomenRadius #Algo gen
+    bpy.ops.object.modifier_apply(modifier="Cast", report=True)
 
     #Créer Le model 
     bpy.ops.object.modifier_add(type="SKIN")
@@ -472,17 +473,17 @@ def randomVector3(xRange,yRange,zRange):
 #print("==================== BEGINING ====================")
 
 #clearScene()
-population = generatePopulation(20,None)
+population = generatePopulation(8,None)
 generations = 20
 for i in range(generations):
-    population = generatePopulation(20,population)
+    population = generatePopulation(8,population)
     
 for i in range(len(population)):
     x = (i % 5)
     y = floor(i / 5)
     DNA = population[i]
    # print("("+str(x)+","+str(y)+")")
- #   print(DNA)
+    print(DNA)
     generateCreature(DNA, (x * 50,y * 50,0), (0,0,0))
 
 
