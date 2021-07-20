@@ -48,7 +48,10 @@ public class IB : MonoBehaviour
                 {
                     AssetDatabase.ImportAsset(file);
                     var obj = AssetDatabase.LoadAssetAtPath<GameObject>(file);
-                    var go = Instantiate(obj);
+                    
+                    CreatureHandler.SpawnCreature(obj);
+                    
+                    /*var go = Instantiate(obj);
                     foreach (var meshRenderer in go.GetComponentsInChildren<MeshRenderer>())
                     {
                         var mats = meshRenderer.sharedMaterials;
@@ -58,7 +61,7 @@ public class IB : MonoBehaviour
                         }
 
                         meshRenderer.sharedMaterials = mats;
-                    }
+                    }*/
                 }
             }
         }
