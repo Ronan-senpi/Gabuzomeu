@@ -500,7 +500,7 @@ for ob in scene.objects:
     #make sure that we only export meshes
   #  if ob.type == 'MESH':
     #export the currently selected object to its own file based on its name
-     #  bpy.ops.export_scene.obj(filepath="C:/Users/pamar/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj", use_selection=True, use_materials=False)
+    bpy.ops.export_scene.obj(filepath="D:/Documents/Projets/Gabuzomeu/Gabuzomeu_Unity/Assets/Blender/result" + str(i) + ".obj", use_selection=True, use_materials=False)
     # deselect the object and move on to another if any more are left
     ob.select_set(False)
     i += 1

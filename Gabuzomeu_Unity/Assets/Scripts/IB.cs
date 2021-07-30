@@ -42,6 +42,7 @@ public class IB : MonoBehaviour
             //if (errorLog != "") Debug.LogError(errorLog);
 
             var files = Directory.GetFiles("Assets/Blender");
+            Vector3 offset = Vector3.zero;
             foreach (var file in files)
             {
                 if (Path.GetExtension(file) == ".obj")
@@ -49,8 +50,11 @@ public class IB : MonoBehaviour
                     AssetDatabase.ImportAsset(file);
                     var obj = AssetDatabase.LoadAssetAtPath<GameObject>(file);
                     
-                    CreatureHandler.SpawnCreature(obj);
-                    
+                    var go = CreatureHandler.SpawnCreature(obj);
+                    offset += Vector3.right * 20;
+                    go.transform.position += offset;
+
+
                     /*var go = Instantiate(obj);
                     foreach (var meshRenderer in go.GetComponentsInChildren<MeshRenderer>())
                     {

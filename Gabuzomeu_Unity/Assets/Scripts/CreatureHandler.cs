@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CreatureHandler : MonoBehaviour
 {
-    public static void SpawnCreature(GameObject model)
+    public static GameObject SpawnCreature(GameObject model)
     {
         var go = Instantiate(model);
         var meshRenderers = go.GetComponentsInChildren<MeshRenderer>();
@@ -14,5 +14,6 @@ public class CreatureHandler : MonoBehaviour
                 
             }
         }
+        return go;
     }
 }
